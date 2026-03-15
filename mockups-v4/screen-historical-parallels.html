@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=390, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Historical Parallels - WW3 Prep</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 390px !important;
+            width: 390px;
+            height: 844px;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            width: 390px !important;
+            font-family: 'JetBrains Mono', monospace;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 20px 20px;
+            
+        }
+        
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            font-size: 11px;
+            color: #666;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        
+        .status-bar .time { color: #888; }
+        .status-bar .indicators { display: flex; gap: 8px; font-size: 10px; color: #555; }
+        
+        /* Header */
+        .header {
+            padding: 16px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+        
+        .header-subtitle {
+            font-size: 10px;
+            color: #666;
+        }
+        
+        /* Main Content */
+        .content {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+        
+        /* Current Situation */
+        .current-situation {
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.12) 0%, rgba(233, 69, 96, 0.04) 100%);
+            border: 1px solid rgba(233, 69, 96, 0.4);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .current-label {
+            font-size: 10px;
+            color: #E94560;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        
+        .current-dot {
+            width: 6px;
+            height: 6px;
+            background: #E94560;
+            border-radius: 0;
+            animation: blink 1s ease-in-out infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .current-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        
+        .current-matches {
+            font-size: 11px;
+            color: #888;
+        }
+        
+        .current-matches strong {
+            color: #E94560;
+        }
+        
+        /* Timeline */
+        .timeline-container {
+            position: relative;
+        }
+        
+        .timeline-header {
+            font-size: 10px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        
+        .timeline-event {
+            position: relative;
+            padding: 16px;
+            background: #111;
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .timeline-event.current {
+            border-color: rgba(233, 69, 96, 0.5);
+            background: rgba(233, 69, 96, 0.05);
+        }
+        
+        .event-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .event-year {
+            font-size: 11px;
+            font-weight: 700;
+            color: #E94560;
+            background: rgba(233, 69, 96, 0.15);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .timeline-event.past .event-year {
+            color: #666;
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .event-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .event-description {
+            font-size: 11px;
+            color: #888;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        
+        /* Signal Match */
+        .signal-match {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 6px;
+            padding: 12px;
+        }
+        
+        .timeline-event.current .signal-match {
+            border-color: rgba(233, 69, 96, 0.3);
+        }
+        
+        .signal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .signal-label {
+            font-size: 9px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .signal-score {
+            font-size: 12px;
+            font-weight: 700;
+            color: #E94560;
+        }
+        
+        .signal-bars {
+            display: flex;
+            gap: 3px;
+        }
+        
+        .signal-bar {
+            width: 5px;
+            height: 16px;
+            background: #1a1a1a;
+            border-radius: 2px;
+        }
+        
+        .signal-bar.active {
+            background: #E94560;
+        }
+        
+        .signal-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+        
+        .signal-tag {
+            padding: 4px 8px;
+            background: rgba(233, 69, 96, 0.1);
+            border: 1px solid rgba(233, 69, 96, 0.3);
+            border-radius: 4px;
+            font-size: 8px;
+            color: #E94560;
+        }
+        
+        /* Correlation Chart */
+        .correlation-chart {
+            background: #111;
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+        
+        .chart-title {
+            font-size: 10px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        
+        .chart-visual {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            height: 80px;
+        }
+        
+        .chart-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .chart-bar-container {
+            width: 100%;
+            height: 55px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        
+        .chart-bar {
+            width: 20px;
+            background: #222;
+            border-radius: 3px 3px 0 0;
+        }
+        
+        .chart-bar.high { background: #E94560; }
+        .chart-bar.medium { background: #FFA500; }
+        .chart-bar.low { background: #00FF00; }
+        
+        .chart-label {
+            font-size: 8px;
+            color: #666;
+            text-align: center;
+        }
+        
+        .chart-column.current .chart-label {
+            color: #E94560;
+        }
+        
+        /* Insight Box */
+        .insight-box {
+            background: #0f0f0f;
+            border-left: 3px solid #E94560;
+            padding: 14px;
+            margin-top: 16px;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .insight-label {
+            font-size: 9px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        
+        .insight-text {
+            font-size: 11px;
+            color: #ccc;
+            line-height: 1.5;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #0a0a0a;
+            border-top: 1px solid #1a1a1a;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 60px;
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: 6px 12px;
+            cursor: pointer;
+            height: 100%;
+        }
+        
+        .nav-item.active {
+            background: rgba(233, 69, 96, 0.1);
+        }
+        
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nav-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2;
+        }
+        
+        .nav-item .nav-icon svg { color: #555; }
+        .nav-item.active .nav-icon svg { color: #E94560; }
+        
+        .nav-label {
+            font-size: 8px;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item.active .nav-label {
+            color: #E94560;
+        }
+        
+        .screen-wrapper {
+            width: 390px;
+            width: 390px;
+            width: 100%;
+            
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="screen-wrapper">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span class="time">14:32:07 UTC</span>
+            <div class="indicators">PATTERN ANALYSIS ACTIVE</div>
+        </div>
+        
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">Historical Parallels</div>
+            <div class="header-subtitle">Pattern matching against historical escalation events</div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Current Situation -->
+            <div class="current-situation">
+                <div class="current-label">
+                    <div class="current-dot"></div>
+                    <span>Current Situation — 2026</span>
+                </div>
+                <div class="current-title">NATO-Russian Escalation Cycle</div>
+                <div class="current-matches">
+                    Signal correlation: <strong>78%</strong> match with <strong>3 historical events</strong>
+                </div>
+            </div>
+            
+            <!-- Timeline -->
+            <div class="timeline-container">
+                <div class="timeline-header">Historical Pattern Analysis</div>
+                
+                <div class="timeline-event past">
+                    <div class="event-header">
+                        <div class="event-year">1962</div>
+                        <div class="event-title">Cuban Missile Crisis</div>
+                    </div>
+                    <div class="event-description">
+                        Direct confrontation between nuclear powers over strategic positioning. 
+                        Resolved through back-channel diplomacy after reaching the brink.
+                    </div>
+                    <div class="signal-match">
+                        <div class="signal-header">
+                            <span class="signal-label">Signal Correlation</span>
+                            <div class="signal-bars">
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar"></div>
+                            </div>
+                        </div>
+                        <div class="signal-list">
+                            <span class="signal-tag">Nuclear Posture</span>
+                            <span class="signal-tag">Strategic Positioning</span>
+                            <span class="signal-tag">Diplomatic Tension</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-event past">
+                    <div class="event-header">
+                        <div class="event-year">1914</div>
+                        <div class="event-title">July Crisis — Alliance Chain Activation</div>
+                    </div>
+                    <div class="event-description">
+                        Regional conflict triggered alliance mechanisms, leading to global war.
+                        Multiple warning signs were ignored by involved parties.
+                    </div>
+                    <div class="signal-match">
+                        <div class="signal-header">
+                            <span class="signal-label">Signal Correlation</span>
+                            <div class="signal-bars">
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                            </div>
+                        </div>
+                        <div class="signal-list">
+                            <span class="signal-tag">Alliance Activation</span>
+                            <span class="signal-tag">Mobilization Orders</span>
+                            <span class="signal-tag">Ultimatum</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-event current">
+                    <div class="event-header">
+                        <div class="event-year">2026</div>
+                        <div class="event-title">NATO-Russian Escalation</div>
+                    </div>
+                    <div class="event-description">
+                        Active escalation cycle with multiple warning indicators matching 
+                        historical patterns. Situation evolving rapidly.
+                    </div>
+                    <div class="signal-match">
+                        <div class="signal-header">
+                            <span class="signal-label">Active Signal Match</span>
+                            <span class="signal-score">78%</span>
+                        </div>
+                        <div class="signal-list">
+                            <span class="signal-tag">Force Mobilization</span>
+                            <span class="signal-tag">Cyber Warfare</span>
+                            <span class="signal-tag">Nuclear Posture</span>
+                            <span class="signal-tag">Supply Chain</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Correlation Chart -->
+            <div class="correlation-chart">
+                <div class="chart-title">Historical Signal Comparison</div>
+                <div class="chart-visual">
+                    <div class="chart-column">
+                        <div class="chart-bar-container">
+                            <div class="chart-bar high" style="height: 50px"></div>
+                        </div>
+                        <div class="chart-label">1914</div>
+                    </div>
+                    <div class="chart-column">
+                        <div class="chart-bar-container">
+                            <div class="chart-bar medium" style="height: 38px"></div>
+                        </div>
+                        <div class="chart-label">1939</div>
+                    </div>
+                    <div class="chart-column">
+                        <div class="chart-bar-container">
+                            <div class="chart-bar high" style="height: 55px"></div>
+                        </div>
+                        <div class="chart-label">1962</div>
+                    </div>
+                    <div class="chart-column">
+                        <div class="chart-bar-container">
+                            <div class="chart-bar low" style="height: 22px"></div>
+                        </div>
+                        <div class="chart-label">1983</div>
+                    </div>
+                    <div class="chart-column current">
+                        <div class="chart-bar-container">
+                            <div class="chart-bar high" style="height: 47px"></div>
+                        </div>
+                        <div class="chart-label">2026</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Insight Box -->
+            <div class="insight-box">
+                <div class="insight-label">AI Analysis</div>
+                <div class="insight-text">
+                    Current signals most closely resemble the 1914 alliance activation pattern (85% match) 
+                    combined with 1962 nuclear posture signals (72% match). Key differentiator: cyber 
+                    warfare dimension adds unprecedented escalation velocity potential.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i data-lucide="home"></i>
+                </div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i data-lucide="bell"></i>
+                </div>
+                <div class="nav-label">Alerts</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i data-lucide="map"></i>
+                </div>
+                <div class="nav-label">Map</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i data-lucide="check-square"></i>
+                </div>
+                <div class="nav-label">Checklist</div>
+            </div>
+            <div class="nav-item active">
+                <div class="nav-icon">
+                    <i data-lucide="history"></i>
+                </div>
+                <div class="nav-label">History</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

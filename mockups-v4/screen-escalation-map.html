@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=390, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Escalation Map - WW3 Prep</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 390px !important;
+            width: 390px;
+            height: 844px;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            width: 390px !important;
+            font-family: 'JetBrains Mono', monospace;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 20px 20px;
+            
+        }
+        
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            font-size: 11px;
+            color: #666;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        
+        .status-bar .time { color: #888; }
+        .status-bar .indicators { display: flex; gap: 8px; font-size: 10px; }
+        .status-bar .indicator { color: #666; }
+        .status-bar .indicator.alert { color: #E94560; }
+        
+        /* Header */
+        .header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #1a1a1a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left .header-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+        
+        .header-left .header-subtitle {
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .header-right {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .header-btn {
+            padding: 5px 10px;
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 9px;
+            color: #888;
+            cursor: pointer;
+        }
+        
+        .header-btn.active {
+            border-color: #E94560;
+            color: #E94560;
+        }
+        
+        /* Map Container */
+        .map-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            min-height: 300px;
+            max-height: 340px;
+            background: #080808;
+        }
+        
+        /* SVG Map Styles */
+        .world-map-svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-grid line {
+            stroke: #1a1a1a;
+            stroke-width: 0.5;
+        }
+        
+        .continent-outline {
+            fill: none;
+            stroke: #333;
+            stroke-width: 1;
+        }
+        
+        .continent-outline.conflict {
+            stroke: #E94560;
+            stroke-width: 1.5;
+        }
+        
+        .continent-outline.warning {
+            stroke: #FFA500;
+            stroke-width: 1;
+        }
+        
+        .continent-outline.safe {
+            stroke: #00FF00;
+            stroke-width: 0.8;
+            stroke-dasharray: 4 2;
+        }
+        
+        .connection-line {
+            stroke: #222;
+            stroke-width: 0.5;
+            fill: none;
+        }
+        
+        .connection-line.active {
+            stroke: #E94560;
+            stroke-width: 1;
+            stroke-dasharray: 4 2;
+            animation: dash 20s linear infinite;
+        }
+        
+        @keyframes dash {
+            to { stroke-dashoffset: -100; }
+        }
+        
+        .map-node {
+            fill: #333;
+        }
+        
+        .map-node.user {
+            fill: #00FF00;
+            animation: nodePulse 2s ease-in-out infinite;
+        }
+        
+        .map-node.conflict {
+            fill: #E94560;
+        }
+        
+        .map-node.warning {
+            fill: #FFA500;
+        }
+        
+        .pulse-ring {
+            fill: none;
+            stroke: #E94560;
+            stroke-width: 1;
+            opacity: 0;
+            animation: pulseRing 2s ease-out infinite;
+        }
+        
+        @keyframes pulseRing {
+            0% { r: 6; opacity: 0.8; }
+            100% { r: 18; opacity: 0; }
+        }
+        
+        @keyframes nodePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .map-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 7px;
+            fill: #555;
+            text-anchor: middle;
+        }
+        
+        .map-label.user { fill: #00FF00; }
+        .map-label.conflict { fill: #E94560; }
+        .map-label.warning { fill: #FFA500; }
+        
+        .coord-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 6px;
+            fill: #333;
+        }
+        
+        /* Coordinates Overlay */
+        .coords-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #222;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 10px;
+            z-index: 10;
+        }
+        
+        .coords-title {
+            color: #555;
+            margin-bottom: 4px;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .coords-value {
+            color: #00FF00;
+            font-weight: 600;
+        }
+        
+        /* Legend */
+        .legend {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid #222;
+            border-radius: 6px;
+            padding: 10px;
+            z-index: 10;
+        }
+        
+        .legend-title {
+            font-size: 8px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .legend-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 9px;
+            color: #888;
+        }
+        
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 0;
+        }
+        
+        .legend-dot.high { background: #E94560; }
+        .legend-dot.medium { background: #FFA500; }
+        .legend-dot.safe { background: #00FF00; }
+        .legend-dot.user { 
+            background: transparent;
+            border: 2px solid #00FF00;
+        }
+        
+        /* Info Panel */
+        .info-panel {
+            background: #0d0d0d;
+            border-top: 1px solid #1a1a1a;
+            padding: 14px;
+        }
+        
+        .info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .info-title {
+            font-size: 12px;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .info-badge {
+            padding: 4px 8px;
+            background: rgba(233, 69, 96, 0.2);
+            border: 1px solid #E94560;
+            border-radius: 4px;
+            font-size: 9px;
+            color: #E94560;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .conflict-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .conflict-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #111;
+            border: 1px solid #1a1a1a;
+            border-radius: 6px;
+        }
+        
+        .conflict-distance {
+            text-align: center;
+            min-width: 50px;
+        }
+        
+        .distance-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #E94560;
+        }
+        
+        .distance-label {
+            font-size: 7px;
+            color: #666;
+        }
+        
+        .conflict-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .conflict-name {
+            font-size: 11px;
+            color: #fff;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .conflict-type {
+            font-size: 9px;
+            color: #888;
+        }
+        
+        .conflict-severity {
+            width: 6px;
+            height: 6px;
+            border-radius: 0;
+            flex-shrink: 0;
+        }
+        
+        .conflict-severity.high { background: #E94560; }
+        .conflict-severity.medium { background: #FFA500; }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            background: #0a0a0a;
+            border-top: 1px solid #1a1a1a;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 60px;
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: 6px 12px;
+            cursor: pointer;
+            height: 100%;
+        }
+        
+        .nav-item.active {
+            background: rgba(233, 69, 96, 0.1);
+        }
+        
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nav-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2;
+        }
+        
+        .nav-item .nav-icon svg { color: #555; }
+        .nav-item.active .nav-icon svg { color: #E94560; }
+        
+        .nav-label {
+            font-size: 8px;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item.active .nav-label {
+            color: #E94560;
+        }
+        
+        .screen-wrapper {
+            width: 390px;
+            width: 390px;
+            width: 100%;
+            
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="screen-wrapper">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span class="time">14:32:07 UTC</span>
+            <div class="indicators">
+                <span class="indicator">GEOINT</span>
+                <span class="indicator alert">3 HOTSPOTS</span>
+            </div>
+        </div>
+        
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="header-title">Escalation Map</div>
+                <div class="header-subtitle">Global conflict zones relative to your location</div>
+            </div>
+            <div class="header-right">
+                <button class="header-btn active">Live</button>
+                <button class="header-btn">24h</button>
+                <button class="header-btn">7d</button>
+            </div>
+        </div>
+        
+        <!-- Map Container -->
+        <div class="map-container">
+            <svg class="world-map-svg" viewBox="0 0 360 180" preserveAspectRatio="xMidYMid meet">
+                <!-- Grid -->
+                <g class="map-grid">
+                    <line x1="0" y1="30" x2="360" y2="30"/>
+                    <line x1="0" y1="60" x2="360" y2="60"/>
+                    <line x1="0" y1="90" x2="360" y2="90"/>
+                    <line x1="0" y1="120" x2="360" y2="120"/>
+                    <line x1="0" y1="150" x2="360" y2="150"/>
+                    <line x1="60" y1="0" x2="60" y2="180"/>
+                    <line x1="120" y1="0" x2="120" y2="180"/>
+                    <line x1="180" y1="0" x2="180" y2="180"/>
+                    <line x1="240" y1="0" x2="240" y2="180"/>
+                    <line x1="300" y1="0" x2="300" y2="180"/>
+                </g>
+                
+                <!-- Coordinate Labels -->
+                <text class="coord-label" x="10" y="25">60N</text>
+                <text class="coord-label" x="10" y="55">30N</text>
+                <text class="coord-label" x="10" y="95">EQ</text>
+                <text class="coord-label" x="10" y="125">30S</text>
+                <text class="coord-label" x="10" y="155">60S</text>
+                
+                <text class="coord-label" x="57" y="175">60E</text>
+                <text class="coord-label" x="117" y="175">120E</text>
+                <text class="coord-label" x="175" y="175">180</text>
+                <text class="coord-label" x="235" y="175">120W</text>
+                <text class="coord-label" x="295" y="175">60W</text>
+                
+                <!-- Continent Outlines -->
+                <path class="continent-outline safe" d="M 20,35 L 45,25 L 75,30 L 85,45 L 80,60 L 70,70 L 55,75 L 45,72 L 35,65 L 25,55 L 20,45 Z"/>
+                <path class="continent-outline" d="M 75,90 L 85,85 L 95,95 L 100,115 L 95,135 L 85,145 L 75,140 L 70,120 L 72,100 Z"/>
+                <path class="continent-outline warning" d="M 175,30 L 195,25 L 210,30 L 220,40 L 215,55 L 200,60 L 185,55 L 175,45 Z"/>
+                <path class="continent-outline" d="M 175,70 L 195,65 L 215,75 L 225,95 L 220,120 L 205,135 L 185,130 L 175,110 L 170,90 Z"/>
+                <path class="continent-outline conflict" d="M 220,20 L 260,15 L 300,20 L 330,25 L 340,35 L 335,50 L 310,55 L 280,50 L 250,45 L 225,35 Z"/>
+                <path class="continent-outline conflict" d="M 215,60 L 235,55 L 250,65 L 245,80 L 230,85 L 215,78 Z"/>
+                <path class="continent-outline warning" d="M 250,50 L 280,45 L 300,55 L 310,75 L 300,95 L 280,100 L 260,90 L 250,70 Z"/>
+                <path class="continent-outline" d="M 245,85 L 260,80 L 270,95 L 265,115 L 250,120 L 240,105 Z"/>
+                <path class="continent-outline" d="M 280,100 L 300,95 L 315,105 L 320,125 L 305,135 L 285,130 L 275,115 Z"/>
+                <path class="continent-outline" d="M 295,130 L 320,125 L 340,135 L 345,155 L 335,165 L 310,165 L 295,150 Z"/>
+                
+                <!-- Connection Lines -->
+                <path class="connection-line active" d="M 185,38 Q 220,30 255,50"/>
+                <path class="connection-line active" d="M 185,38 Q 200,55 230,70"/>
+                <path class="connection-line" d="M 185,38 Q 150,60 75,100"/>
+                
+                <!-- Major nodes -->
+                <circle class="map-node user" cx="185" cy="38" r="4"/>
+                <circle class="pulse-ring" cx="185" cy="38" r="4"/>
+                <circle class="map-node conflict" cx="222" cy="42" r="3"/>
+                <circle class="pulse-ring" cx="222" cy="42" r="3"/>
+                <circle class="map-node conflict" cx="280" cy="35" r="3"/>
+                <circle class="pulse-ring" cx="280" cy="35" r="3"/>
+                <circle class="map-node conflict" cx="235" cy="70" r="3"/>
+                <circle class="map-node warning" cx="205" cy="35" r="2"/>
+                <circle class="map-node warning" cx="285" cy="70" r="2"/>
+                <circle class="map-node" cx="55" cy="50" r="2"/>
+                
+                <!-- Labels -->
+                <text class="map-label user" x="185" y="30">LONDON</text>
+                <text class="map-label conflict" x="222" y="52">UKRAINE</text>
+                <text class="map-label conflict" x="280" y="28">RUSSIA</text>
+                <text class="map-label conflict" x="235" y="82">MIDDLE EAST</text>
+                <text class="map-label warning" x="205" y="45">BALTIC</text>
+            </svg>
+            
+            <!-- Coordinates Overlay -->
+            <div class="coords-overlay">
+                <div class="coords-title">Your Location</div>
+                <div class="coords-value">51.5074 N, 0.1278 W</div>
+            </div>
+            
+            <!-- Legend -->
+            <div class="legend">
+                <div class="legend-title">Threat Level</div>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-dot high"></div>
+                        <span>Active Conflict</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot medium"></div>
+                        <span>Elevated Tension</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot safe"></div>
+                        <span>Stable Region</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot user"></div>
+                        <span>Your Position</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Info Panel -->
+        <div class="info-panel">
+            <div class="info-header">
+                <div class="info-title">Nearby Conflict Zones</div>
+                <div class="info-badge">3 Active</div>
+            </div>
+            
+            <div class="conflict-list">
+                <div class="conflict-item">
+                    <div class="conflict-distance">
+                        <div class="distance-value">2,400</div>
+                        <div class="distance-label">KM</div>
+                    </div>
+                    <div class="conflict-details">
+                        <div class="conflict-name">Ukraine Front</div>
+                        <div class="conflict-type">Active military engagement | NATO border</div>
+                    </div>
+                    <div class="conflict-severity high"></div>
+                </div>
+                
+                <div class="conflict-item">
+                    <div class="conflict-distance">
+                        <div class="distance-value">3,500</div>
+                        <div class="distance-label">KM</div>
+                    </div>
+                    <div class="conflict-details">
+                        <div class="conflict-name">Middle East Theater</div>
+                        <div class="conflict-type">Regional instability | Supply chain impact</div>
+                    </div>
+                    <div class="conflict-severity high"></div>
+                </div>
+                
+                <div class="conflict-item">
+                    <div class="conflict-distance">
+                        <div class="distance-value">1,800</div>
+                        <div class="distance-label">KM</div>
+                    </div>
+                    <div class="conflict-details">
+                        <div class="conflict-name">Baltic States</div>
+                        <div class="conflict-type">Elevated tension | NATO eastern flank</div>
+                    </div>
+                    <div class="conflict-severity medium"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i data-lucide="home"></i>
+                </div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i data-lucide="bell"></i>
+                </div>
+                <div class="nav-label">Alerts</div>
+            </div>
+            <div class="nav-item active">
+                <div class="nav-icon">
+                    <i data-lucide="map"></i>
+                </div>
+                <div class="nav-label">Map</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i data-lucide="check-square"></i>
+                </div>
+                <div class="nav-label">Checklist</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i data-lucide="settings"></i>
+                </div>
+                <div class="nav-label">Settings</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
