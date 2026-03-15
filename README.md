@@ -1,8 +1,10 @@
-# WW3 Prep App
+# Pronoia
 
 **Stay informed. Stay prepared.**
 
-A mobile app concept for monitoring global conflict risk and personal preparedness.
+> "Pronoia is the opposite of paranoia — the belief that the universe is conspiring to help you."
+
+A mobile app concept for monitoring global risk and personal preparedness with a calm, empowering approach.
 
 ## Features
 
